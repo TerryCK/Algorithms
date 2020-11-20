@@ -11,3 +11,4 @@ this repo is for personally learning notes.
 
 ### Easy
 * [155. Min Stack](solutions/0155_Min_Stack.md)
+* [0020 Valid Parentheses](solutions/0020-Valid_Parentheses.md)
