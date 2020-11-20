@@ -10,4 +10,4 @@ this repo is for personally learning notes.
 ## Leetcode Problems
 
 ### Easy
-* [155. Min Stack](solutions/0155_Min_Stack)
+* [155. Min Stack](solutions/0155_Min_Stack.md)
