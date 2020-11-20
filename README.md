@@ -1,2 +1,7 @@
 # Algorithms
-a note of personally learning
+this repo is for personally learning notes.
+
+---
+##Cache
+* [LRU Cache](solutions/LRUCache.md)
+
