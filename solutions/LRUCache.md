@@ -1,6 +1,8 @@
 ### LRU Cache
 #### Introduction
-![Cache](images/CacheLRU.jpg)
+
+
+![example](images/CacheLRU.png)
 
 A cache LRU a.k.a __Least Recently Used__ is similar to a Dictionary, it stores a data with associated to a key, however the difference between LRU and Dictionary is LRU has a capacity but dictionary not, it has great perfomance when hightly hit same memory access and reduct memory space with specific capacity.
 
@@ -196,7 +198,7 @@ When random access in memory, the array is a chunk of continuing memory, DoublyL
 #### Playground
 Xcode 12.2 Swift 5.3
 
-[Swift playground](playgrounds/Cache LRU.playground)
+[Swift playground](playgrounds/CacheLRU.playground)
 
 #### Inspired by 
 [How To Implement Cache LRU With Swift](https://marcosantadev.com/implement-cache-lru-swift/#getting_started)
