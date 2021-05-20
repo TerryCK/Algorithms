@@ -48,7 +48,7 @@ class Solution {
         }
         return []
     }
-    
+    // time & space complexity: O(n), 
     func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
         var temp = [Int: Int]()
         for index in 0..<nums.count {
