@@ -56,7 +56,7 @@ class Solution {
         let isOdd = count % 2 != 0
         let middleIndex = count/2  + (isOdd ? 0 : -1)
         
-        for index in middleIndex..<count where str[index] != str[count - index - 1] {
+        for index in middleIndex..<count where str[index] != str[count - 1 - index] {
             return false
         }
         
@@ -75,3 +75,20 @@ solution.isPalindrome(10) == false
 solution.isPalindrome(-101) == false
 
 solution.isPalindrome(100) == false
+
+import Foundation
+
+// 1 - 5
+// 0001 - 0101
+// input = 4   0100
+// output = 4  0100
+extension Comparable where Self: BinaryInteger {
+    
+    func clamped(range: ClosedRange<Self>) -> Self {
+        let upper = range.upperBound
+        let lower = range.lowerBound
+        
+        return self & upper
+        
+    }
+}
