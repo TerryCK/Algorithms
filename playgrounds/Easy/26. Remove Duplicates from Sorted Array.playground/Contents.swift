@@ -40,9 +40,10 @@
  nums is sorted in ascending order.
 */
 
-// T: O(N), S: O(N)
+
 class Solution {
-    func removeDuplicates(_ nums: inout [Int]) -> Int {
+    // T: O(N), S: O(N)
+    func removeDuplicates1(_ nums: inout [Int]) -> Int {
         var result = [Int]()
         for num in nums {
             if result.last != num {
@@ -51,6 +52,18 @@ class Solution {
         }
         nums = result
         return result.count
+    }
+    
+    // T: O(N), S: O(1)
+    func removeDuplicates(_ nums: inout [Int]) -> Int {
+        guard !nums.isEmpty else { return 0 }
+        var currentIndex = 0
+        for index in 1..<nums.count where nums[index] != nums[currentIndex] {
+            currentIndex += 1
+            nums[currentIndex] = nums[index]
+        }
+        nums = Array(nums[0...currentIndex])
+        return currentIndex + 1
     }
 }
 
