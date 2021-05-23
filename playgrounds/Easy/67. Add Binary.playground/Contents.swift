@@ -1,65 +1,43 @@
 /*
- Given two binary strings a and b, return their sum as a binary string.
+ Given a non-negative integer x, compute and return the square root of x.
+
+ Since the return type is an integer, the decimal digits are truncated, and only the integer part of the result is returned.
+
+ Note: You are not allowed to use any built-in exponent function or operator, such as pow(x, 0.5) or x ** 0.5.
 
   
 
  Example 1:
 
- Input: a = "11", b = "1"
- Output: "100"
+ Input: x = 4
+ Output: 2
  Example 2:
 
- Input: a = "1010", b = "1011"
- Output: "10101"
-  
-
- Constraints:
-
- 1 <= a.length, b.length <= 104
- a and b consist only of '0' or '1' characters.
- Each string does not contain leading zeros except for the zero itself.
+ Input: x = 8
+ Output: 2
+ Explanation: The square root of 8 is 2.82842..., and since the decimal part is truncated, 2 is returned.
  */
 
 // T: O(n), S: O(n)
-
 class Solution {
-    
-    func addBinary(_ a: String, _ b: String) -> String {
-        let a = Array(a)
-        let b = Array(b)
-        var carry = 0
-        var index = max(a.count, b.count)
-        var target = ""
-        let aOffset = index - a.count
-        let bOffset = index - b.count
-        index -= 1
-        
-        while index >= 0 {
-            var aValue = 0
-            var bValue = 0
-            if  (0..<a.count).contains(index-aOffset) {
-                aValue = Int(String(a[index-aOffset])) ?? 0
-            }
-            
-            if (0..<b.count).contains(index-bOffset) {
-                bValue = Int(String(b[index-bOffset])) ?? 0
-            }
-            
-            let resultValue = aValue + bValue + carry
-            carry = resultValue / 2
-            
-            target.append("\(resultValue % 2)")
-
-            index -= 1
+    func mySqrt(_ x: Int) -> Int {
+        guard x > 0 else {
+            return 0
         }
-        
-        if carry == 1 {
-            target.append("1")
+        var index = 1
+        var target = 1
+        while true {
+            if index * index > x {
+                return target
+            } else {
+                target = index
+            }
+            index += 1
         }
-        return String(target.reversed())
+        return target
     }
 }
 
 let solution = Solution()
-solution.addBinary("11", "1") //== "100"
-solution.addBinary("1010", "1011") //== "10101"
+solution.mySqrt(4) == 2
+solution.mySqrt(8) == 2
