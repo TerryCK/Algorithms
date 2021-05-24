@@ -76,7 +76,7 @@ class Solution {
         var result = 0
         
         for index in 0..<count {
-            var operation: (Int, Int) -> (Int) = { $0 + $1 }
+            var operation: (Int, Int) -> (Int) = (+)
             
             /* why can't just assign an operator into a variable
              var operation: (Int, Int) -> (Int) = +
@@ -87,7 +87,7 @@ class Solution {
             case (count-1, _): break
             case (_, "I") where Array("VX").contains(chars[index+1]): fallthrough
             case (_, "X") where Array("LC").contains(chars[index+1]): fallthrough
-            case (_, "C") where Array("DM").contains(chars[index+1]): operation = { $0 - $1 }
+            case (_, "C") where Array("DM").contains(chars[index+1]): operation = (-)
             default: break
             }
             result = operation(result, lookup[char]!)
