@@ -35,7 +35,9 @@ UIImage(named: "b.jpg")
  */
 
 class Solution {
-    func arrangeCoins(_ n: Int) -> Int {
+    
+    // T: O(n)
+    func arrangeCoins2(_ n: Int) -> Int {
         var r = n, l = 0
         
         while l < r {
@@ -45,6 +47,23 @@ class Solution {
         }
         return l
     }
+    
+    // T : O(logb(n))
+    func arrangeCoins(_ n: Int) -> Int {
+            var r = n, l = 0
+            while l + 1 < r {
+                let mid = l + (r - l) / 2
+                switch (mid+1) * mid / 2 {
+                case n: return mid
+                case let value where value < n:
+                    l = mid
+                case let value where value > n:
+                    r = mid
+                default: fatalError()
+                }
+            }
+            return (r+1) * r / 2 <= n ? r : l
+        }
 }
 
 let solution = Solution()
