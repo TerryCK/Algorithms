@@ -38,7 +38,7 @@
 
 // T: O(log n)
 class Solution {
-    func searchInsert(_ nums: [Int], _ target: Int) -> Int {
+    func searchInsert2(_ nums: [Int], _ target: Int) -> Int {
         let count = nums.count
         guard !nums.isEmpty else { return 0 }
         let threshold = 5
@@ -88,6 +88,28 @@ class Solution {
             }
         }
         return 0
+    }
+    
+    func searchInsert(_ nums: [Int], _ target: Int) -> Int {
+        var l = 0, r = nums.count - 1
+        
+        while l + 1 < r {
+            let mid = l + (r - l) / 2
+            
+            switch nums[mid] {
+            case target: return mid
+            case let value where value < target : l = mid
+            case let value where value > target : r = mid
+            default: fatalError("never execute")
+            }
+        }
+        if nums[r] < target {
+            return r + 1
+        }
+        if nums[l] < target {
+            return l + 1
+        }
+        return l
     }
 }
 
