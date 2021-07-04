@@ -56,9 +56,9 @@ class Solution {
     func getDecimalValue(_ head: ListNode?) -> Int {
         
         var currentBase = 1
-        var result = 0 //head?.val ?? 0
+        var result = head?.val ?? 0
         var currentNode = head
-        var array: [Int] = [head?.val ?? 0]
+        var array: [Int] = [result]
         
         while let node = currentNode?.next {
             array.append(node.val)
@@ -68,13 +68,13 @@ class Solution {
         for index in 0..<array.count {
             let value = array[array.count-index-1]*currentBase
             result += value
-            print(index, currentBase,  array[array.count-index-1], value, result)
             currentBase *= 2
         }
         
         return result
     }
 }
+
 extension Array where Element == Int {
     func list() -> ListNode? {
         let head = ListNode(0)
