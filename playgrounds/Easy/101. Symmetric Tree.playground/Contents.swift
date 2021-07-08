@@ -42,6 +42,36 @@ public class TreeNode {
 
 class Solution {
     func isSymmetric(_ root: TreeNode?) -> Bool {
+        guard let root = root else { return  true }
+        
+        
+        var queue: [TreeNode] = [root]
+        var headIndex = 0
+        
+        while headIndex < queue.count {
+            
+            var temp: [Int] = []
+            let size = queue.count - headIndex
+            
+            for _ in 0..<size {
+                defer { headIndex += 1 }
+                let currentNode = queue[headIndex]
+                temp.append(currentNode.val)
+                if currentNode.val != .max {
+                    queue.append(currentNode.left  ?? TreeNode(Int.max))
+                    queue.append(currentNode.right ?? TreeNode(Int.max))
+                }
+            }
+            
+            if temp != temp.reversed() {
+                return false
+            }
+        }
+
+       return true
+    }
+    
+    func _isSymmetric(_ root: TreeNode?) -> Bool {
         isMirror(left: root?.left, right: root?.right)
     }
     
@@ -53,6 +83,9 @@ class Solution {
         default: return false
         }
     }
+    
+    
+    
 }
 
 
