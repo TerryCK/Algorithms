@@ -1,6 +1,21 @@
 
 
 
+// linkedList data generator
+extension Array where Element == Int {
+    func linkList() -> LinkedList<Element>.Node<Element>? {
+        guard !isEmpty else { return nil }
+        var head: LinkedList<Element>.Node<Element>?
+        for element in reversed() {
+            let node = LinkedList<Element>.Node(value: element, next: head)
+            head = node
+        }
+        
+        return head
+    }
+}
+
+
 
 struct LinkedList<Element> {
     class Node<Value> {
@@ -18,8 +33,17 @@ struct LinkedList<Element> {
     var tail: Node<Element>?
     
     
-    init() {
+    init(head: Node<Element>?) {
+        self.head = head
+        var current = head
+        var pre = head
+        while let cur = current {
+            
+            pre = cur
+            current = cur.next
+        }
         
+        self.tail = pre
     }
     
     
@@ -104,10 +128,20 @@ struct LinkedList<Element> {
             prev = current
             current = next
         }
-        
-        return current.next
+        prev.next = nil
+        return current.value
     }
 }
 
 
 
+
+
+
+
+var list = LinkedList(head: [0,1,2,3,4].linkList())
+list.isEmpty
+list.removeLast()
+list.removeLast()
+list.removeLast()
+list.removeLast()
