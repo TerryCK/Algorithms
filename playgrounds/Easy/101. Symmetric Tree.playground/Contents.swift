@@ -41,7 +41,51 @@ public class TreeNode {
 }
 
 class Solution {
+    
+    func isSymmetricIteration(_ root: TreeNode?) -> Bool {
+        guard let root = root else { return true }
+        var queue = [root]
+        var headIndex = 0
+        
+        
+        while headIndex < queue.count {
+            var temp = [Int]()
+            let size = queue.count - headIndex
+            
+            for _ in 0..<size {
+                defer { headIndex += 1}
+                let currentNode = queue[headIndex]
+                temp.append(currentNode.val)
+                if currentNode.val != .max {
+                    queue.append(currentNode.left ?? TreeNode(.max))
+                    queue.append(currentNode.right ?? TreeNode(.max))
+                }
+            }
+            if temp != temp.reversed() {
+                return false
+            }
+        }
+        return true
+    }
+    
+    
     func isSymmetric(_ root: TreeNode?) -> Bool {
+        func _isSymmetric(l: TreeNode?, r: TreeNode?) -> Bool {
+            switch (l, r) {
+            case let (l?, r?) where l.val == r.val:
+                return _isSymmetric(l: l.left, r: r.right) && _isSymmetric(l: l.right, r: r.left)
+            case (nil, nil): return true
+            default: return false
+            }
+        }
+        
+        return _isSymmetric(l: root?.left, r: root?.right)
+    }
+    
+    
+    
+    
+    func isSymmetric2(_ root: TreeNode?) -> Bool {
         guard let root = root else { return  true }
         
         
