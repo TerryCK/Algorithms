@@ -1,4 +1,5 @@
 /*
+ https://leetcode.com/problems/binary-search/
  Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.
 
  You must write an algorithm with O(log n) runtime complexity.
@@ -20,33 +21,28 @@
  Constraints:
 
  1 <= nums.length <= 104
- -9999 <= nums[i], target <= 9999
+ -104 < nums[i], target < 104
  All the integers in nums are unique.
- nums is sorted in an ascending order.
+ nums is sorted in ascending order.
 
  */
 
-
 class Solution {
     func search(_ nums: [Int], _ target: Int) -> Int {
-        var l = 0, r = nums.count - 1
-        while l + 1 < r {
-            let mid = l + (r - l) / 2
-            
-            switch nums[mid] {
-            case target: return mid
-            case let value where value > target:
-                r = mid
-            case let value where value < target:
-                l = mid
-            default:
-                fatalError()
+        var lower = 0
+        var upper = nums.count - 1
+        
+        while lower < upper {
+            let mid = lower + (upper - lower) / 2
+            if nums[mid] == target {
+                return mid
+            } else if nums[mid] < target {
+                lower = mid + 1
+            } else {
+                upper = mid
             }
         }
-        return nums[l] == target ? l : nums[r] == target ? r : -1
+        
+        return nums[lower] == target ? lower : -1
     }
 }
-
-let solution = Solution()
-solution.search([-1,0,3,5,9,12], 9) //== 4
-//solution.search([-1,0,3,5,9,12], 2) == -1
