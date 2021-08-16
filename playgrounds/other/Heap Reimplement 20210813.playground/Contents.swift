@@ -166,3 +166,45 @@ print(heap.indexFirst(2))
 
 //heap.remove(0)
 
+
+
+
+
+
+
+
+
+
+
+
+extension DispatchQueue {
+    
+    static func mainAsyncIfNeeded(_ block: @escaping () -> Void) {
+        if Thread.current.isMainThread {
+            block()
+        } else {
+            DispatchQueue.main.async(execute: block)
+        }
+    }
+}
+
+
+// currently
+DispatchQueue.main.async {
+    <#code#>
+}
+// improvement
+DispatchQueue.mainAsyncIfNeeded {
+    <#code#>
+}
+
+
+
+
+
+
+
+
+
+
+
