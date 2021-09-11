@@ -1,0 +1,10 @@
+{
+    "Simulator Target Bundle": "com.countries.swiftui",
+    "aps": {
+        "alert": {
+            "title": "Push on the simulator",
+            "subtitle": "Test push notification",
+            "body": "This notification will show up in the simulator!"
+        }
+    }
+}

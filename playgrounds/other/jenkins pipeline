@@ -1,0 +1,144 @@
+def targetEnv = "${envs}"
+def branch = "${branch}"
+def jobs = "${jobs}".tokenize(',')
+def updateVer = "${updateVer}"
+def credentialsKey = '21fc12bd-ca98-4f38-a21b-baf5ca54247e'
+
+def getCurrentVer(String arg, String targetEnv) {
+  def jsonObj = readJSON file :"version/${arg}.json"
+  return jsonObj["${targetEnv}"]
+}
+
+def getUpdateIndex() {
+  if(updateVer=="Major") return 0;
+  else if(updateVer=="Min") return 2;
+  else return 3;
+}
+
+def delegateBuild(jobName, targetEnv, verNo) {
+  if(branch == "default") branch = targetEnv
+  return { build job: jobName, parameters: [[$class: 'StringParameterValue', name: 'Env', value: targetEnv], [$class: 'StringParameterValue', name: 'branch', value: branch],[$class: 'StringParameterValue', name: 'versionNo', value: verNo]],quietPeriod: 3 }
+}
+def copyVersionFile() {
+  sh("cp -f ${JenkinsHome}/workspace/ReleaseTrigger-188BET/version/{5101ios-188bet.json,5102android-188bet.json} ${JenkinsHome}/workspace/template")
+}
+
+def recoveryVesionFile() {
+  sh("cp -f ${JenkinsHome}/workspace/template/{5101ios-188bet.json,5102android-188bet.json} ${JenkinsHome}/workspace/ReleaseTrigger-188BET/version ")
+}
+
+def setNewVer(String arg, String targetEnv) {
+//   if(targetEnv == "preview") return "1.${BUILD_TIMESTAMP}.99.1"
+  def jsonObj = readJSON file :"version/${arg}.json"
+  def newVer  = jsonObj["${targetEnv}"]
+  def index   = getUpdateIndex()
+
+  newVer = addVersion(newVer, index)
+  jsonObj["${targetEnv}"] = newVer
+  writeJSON file: "version/${arg}.json", json: jsonObj
+  return newVer
+}
+
+def addVersion(String version, indexUpdate) {
+  def originVer = version.tokenize('.')
+  def newVer = ""
+  int index = 0
+
+  for(String ver : originVer) {
+    if(index == indexUpdate) ver = ver.toInteger() + 1
+    else if(index > indexUpdate) ver = 0
+
+    if(index == 1) {
+      def targetEnv = "${envs}"
+      ver = "${BUILD_TIMESTAMP}"
+      //if(targetEnv!="prod") ver += "${envs}"
+    }
+    newVer = newVer + ver + ".";
+    index++
+  }
+  def verLength = newVer.size()
+  return newVer.substring(0, verLength - 1)
+}
+
+
+stage('Reset & Pull') {
+  node {
+    dir("${JenkinsHome}/artifact2/188/${targetEnv}"){
+      sh("git reset --hard")
+      sshagent([credentialsKey]) {
+        sh("git pull")
+      }
+    }
+
+    git branch: 'master',credentialsId: credentialsKey, url: 'ssh://git@gitlab.ict888.net:8022/188/ReleaseMgt/jenkins-groovy.git'
+  }
+}
+
+stage('Build') {
+  node {
+    def branches = [:]
+    for(String jobName : jobs) {
+      def newVer = setNewVer(jobName, targetEnv)
+
+      jobName = jobName +'-' + targetEnv
+      if (targetEnv == "prodv2") {
+          branches["${jobName}"] = delegateBuild(jobName, 'prod', newVer)
+      } else{
+        branches["${jobName}"] = delegateBuild(jobName, targetEnv, newVer)
+      }
+    }
+    parallel branches
+  }
+}
+
+stage('Push') {
+  node {
+    dir("${JenkinsHome}/artifact2/188/${targetEnv}"){
+      sh("git add .")
+      sh('git commit -a -m "Update Actifact ${BUILD_TIMESTAMP}"')
+      sshagent([credentialsKey]) {
+        sh('git push')
+        sh('git lfs prune')
+      }
+      sh('git branch -v')
+    }
+    if(targetEnv != "preview") {
+      //update version No
+      // for push stage file failed that caused by other App modules has updated on the same repository on gitlab while this this job has not yet finished.
+      // the workaround is after App built finished, update repository of local with gitlab one.
+      copyVersionFile()
+      sh("git reset --hard")
+      git branch: 'master',credentialsId: credentialsKey, url: 'ssh://git@gitlab.ict888.net:8022/188/ReleaseMgt/jenkins-groovy.git'
+
+      recoveryVesionFile()
+
+
+      sh("git add .")
+      sh('git commit -a -m "Update VersionNo ${BUILD_TIMESTAMP}"')
+      sshagent([credentialsKey]) {
+        sh( 'git push --set-upstream origin master')
+      }
+    }
+  }
+}
+
+
+stage('Tag') {
+  node {
+    for(String jobName : jobs) {
+      if(targetEnv == "qat") {
+        return
+      }
+
+      def jsonObj = readJSON file :"projects/${jobName}.json"
+      def projectIds = jsonObj.projectId.tokenize(',')
+
+      def currVer = getCurrentVer(jobName, targetEnv)
+
+      for(String id : projectIds) {
+        def tagName = "188asia/" + targetEnv + "/" + currVer
+        sh("curl --header 'PRIVATE-TOKEN: 7DUmBYsS-bmGmvWe5AhZ' -X POST http://gitlab.ict888.net/api/v4/projects/${id}/repository/tags?tag_name=${tagName}\\&ref=${targetEnv}")
+      }
+    }
+  }
+}
