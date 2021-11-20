@@ -44,7 +44,7 @@ class OCRReader {
 }
 
 func url(for image: DemoImage) -> URL? {
-    return Bundle.main.url(forResource: image.rawValue, withExtension: "jpg")
+    return Bundle.main.url(forResource: "demoDocument5", withExtension: "png")
 }
 
 let ocrReader = OCRReader()
