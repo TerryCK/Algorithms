@@ -4,9 +4,8 @@
     case none
 }
 
-
-postfix operator >?
 postfix operator >!
+
 extension Optional {
     // autoclosure to achieve lazy evaluation
     static func ??(_ originValue: Optional<Wrapper>, yieldValue: @autoclosure () -> Wrapper) -> Wrapper {
@@ -36,6 +35,8 @@ extension Optional {
         }
     }
 }
+
+
 
 
 // protocol condition conformance, when value conformance a protocol then the contain type will conform specific protocol.
