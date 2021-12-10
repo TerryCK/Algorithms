@@ -1,9 +1,11 @@
 
-enum Optional<Wrapper> {
+@frozen enum Optional<Wrapper> {
     case some(Wrapper)
     case none
 }
 
+
+postfix operator >?
 extension Optional {
     // autoclosure to achieve lazy evaluation
     static func ??(_ originValue: Optional<Wrapper>, yieldValue: @autoclosure () -> Wrapper) -> Wrapper {
@@ -14,12 +16,14 @@ extension Optional {
         }
     }
     
+    
+    
     // hight-order function for transform the wrapper type
-    func map<T>(_ closure: (Wrapper) -> T) -> Optional<T> {
+    func map<T>(_ closure: (Wrapper) throws -> T) rethrows -> Optional<T> {
         
         // pattern match with memory binding
         switch self {
-        case let .some(value): return .some(closure(value))
+        case let .some(value): return .some(try closure(value))
         case .none           : return .none
         }
     }
@@ -31,6 +35,29 @@ extension Optional: Equatable where Wrapper: Equatable { }
 extension Optional: Hashable  where Wrapper: Hashable  { }
 
 
+extension Optional: Decodable  where Wrapper: Decodable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if container.decodeNil() {
+            self = .none
+        } else {
+            self = .some(try container.decode(Wrapper.self))
+        }
+    }
+}
+
+extension Optional: Encodable  where Wrapper: Encodable  {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .some(let value):
+            try container.encode(value)
+        case .none:
+            try container.encodeNil()
+        }
+       
+    }
+}
 Optional("1") == Optional("1") // true
 
 let optionalInt = Optional<Int>.some(10)
