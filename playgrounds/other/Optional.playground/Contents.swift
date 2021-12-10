@@ -6,6 +6,7 @@
 
 
 postfix operator >?
+postfix operator >!
 extension Optional {
     // autoclosure to achieve lazy evaluation
     static func ??(_ originValue: Optional<Wrapper>, yieldValue: @autoclosure () -> Wrapper) -> Wrapper {
@@ -16,7 +17,14 @@ extension Optional {
         }
     }
     
-    
+    static postfix func >!(_ originValue: Optional<Wrapper>) -> Wrapper {
+        switch originValue {
+        case .none:
+            fatalError("can not force unwrap a nil")
+        case .some(let value):
+            return value
+        }
+    }
     
     // hight-order function for transform the wrapper type
     func map<T>(_ closure: (Wrapper) throws -> T) rethrows -> Optional<T> {
