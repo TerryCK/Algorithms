@@ -1,12 +1,47 @@
+import Foundation
+
 
 @frozen enum Optional<Wrapper> {
     case some(Wrapper)
     case none
+    
 }
+
+@dynamicMemberLookup @dynamicCallable
+struct Builder<Root> {
+    let subject: Root
+    subscript<Value>(dynamicMember keyPath: WritableKeyPath<Root, Value>) -> ((Value) -> Self) {
+        var subjectCopy = subject
+        return { value in
+            subjectCopy[keyPath: keyPath] = value
+            return Self(subject: subjectCopy)
+        }
+    }
+    
+    func dynamicallyCall(withKeywordArguments: [String]) -> String {
+        return ""
+    }
+    
+    func dynamicallyCall(withArguments: [String]) -> String {
+        ""
+    }
+    
+    
+    func dynamicallyCall<Value>(withArguments: KeyPath<Root, Value>) -> Value {
+        subject[keyPath: withArguments]
+    }
+}
+struct Person {
+    var age = 5
+    var name = "Terry"
+}
+let builder = Builder(subject: Person())
+builder.name
 
 postfix operator >!
 
 extension Optional {
+    
     // autoclosure to achieve lazy evaluation
     static func ??(_ originValue: Optional<Wrapper>, yieldValue: @autoclosure () -> Wrapper) -> Wrapper {
         if case let .some(value) = originValue {
@@ -34,7 +69,15 @@ extension Optional {
         case .none           : return .none
         }
     }
+    
+    static func >>(lhs: Optional<Wrapper>, rhs: @autoclosure () -> (Wrapper)) -> Wrapper {
+        switch lhs {
+        case .none: break
+        case .some(let value): return rhs()
+        }
+    }
 }
+
 
 
 
@@ -127,3 +170,4 @@ extension Optional: ExpressibleByStringLiteral where Wrapper == String {
         self = .some(value)
     }
 }
+
